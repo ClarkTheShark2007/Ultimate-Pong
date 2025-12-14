@@ -9,7 +9,7 @@ int scoreRight = 0;
 int roundScoreLeft = 0;
 int roundScoreRight = 0;
 
-int roundTimerSeccond = 5;
+int roundTimerSeccond = 10;
 
 float paddleSpeed = 5.5;
 int roundTimer = 0;
@@ -61,8 +61,15 @@ void roundTimerDisplay() {
       text(0, width/2, 60);
       fill(255);
     } else {
-      roundEnded = true;
-      roundCount++;
+      if (scoreLeft > scoreRight) {
+        roundScoreLeft++;
+        roundEnded = true;
+        roundCount++;
+      } else {
+        roundScoreRight++;
+        roundEnded = true;
+        roundCount++;
+      }
     }
   } else {
     textSize(40);
@@ -79,7 +86,7 @@ void midScreen() {
     gameEnd = true;
     text("Player 1 wins", width/2, height/2);
     textSize(40);
-    text("Press any button for next round", width/2, height/2+60);
+    text("Press any button for menu", width/2, height/2+60);
     if (keyPressed == true) {
       resetRound();
       gameStarted = false;
@@ -94,7 +101,7 @@ void midScreen() {
       gameEnd = true;
       text("Player 2 wins", width/2, height/2);
       textSize(40);
-      text("Press any button for next round", width/2, height/2+60);
+      text("Press any button for menu", width/2, height/2+60);
       if (keyPressed == true) {
         resetRound();
         gameStarted = false;
@@ -114,7 +121,6 @@ void midScreen() {
     text("Press any button for next round", width/2, height/2+60);
     if (keyPressed == true) {
       resetRound();
-      roundScoreLeft++;
     }
   } else {
     if (scoreLeft < scoreRight && gameEnd == false)
@@ -124,7 +130,6 @@ void midScreen() {
       text("Press any button for menu", width/2, height/2+60);
       if (keyPressed == true) {
         resetRound();
-        roundScoreLeft++;
       }
     }
   }
