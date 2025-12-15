@@ -1,5 +1,11 @@
-Ball ball; // Define the ball as a global object
+import processing.sound.*;
 
+//Sounds
+ArrayList<SoundFile> trackList;
+int trackListCounter = 0;
+
+//Objects
+Ball ball; // Define the ball as a global object
 Paddle paddleLeft;
 Paddle paddleRight;
 
@@ -24,6 +30,9 @@ boolean gameEnd = false;
 void setup() {
   size(800, 600, P2D);
   frameRate(60);
+  
+  loadSoundsFiles();
+
   ball = new Ball(width/2, height/2, 50); //create a new ball to the center of the window
   ball.speed.x = 5; // Giving the ball speed in x-axis
   ball.speed.y = random(-3, 3); // Giving the ball speed in y-axis
@@ -34,6 +43,7 @@ void setup() {
 
 void draw() {
   menuTimer--;
+  playTracks();
   background(0); //clear canvas
   if (gameStarted == false) {
     titleScreen();
@@ -138,7 +148,6 @@ void midScreen() {
       text("Press any button for menu", width/2, height/2+60);
       if (keyPressed == true && menuTimer <= 0) {
         resetRound();
-        
       }
     }
   }
@@ -221,6 +230,26 @@ void gameScreen() {
   text(scoreRight, width/2+30, 30); // Right side score
   text(scoreLeft, width/2-30, 30); // Left side score
 }
+
+void playTracks() {
+  if(!trackList.get(trackListCounter).isPlaying()) {
+    trackList.get(trackListCounter).play();
+  } else {
+    trackListCounter++;
+  }
+}
+
+void loadSoundsFiles() {
+  trackList = new ArrayList<SoundFile>();
+
+  // Load sound files and add them to the list
+  trackList.add(new SoundFile(this, "Music/Loop1.wav"));
+  trackList.add(new SoundFile(this, "Music/Loop2.wav"));
+  trackList.add(new SoundFile(this, "Music/Loop3.wav"));
+  trackList.add(new SoundFile(this, "Music/Loop4.wav"));
+  trackList.add(new SoundFile(this, "Music/Loop5.wav"));
+}
+
 
 void keyPressed() {
   if (keyCode == UP) {
