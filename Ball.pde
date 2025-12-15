@@ -23,6 +23,7 @@ class Ball {
   
   void display() {
     fill(c); //set the drawing color
+    noStroke();
     ellipse(location.x,location.y,diameter,diameter); //draw a circle
   }
   

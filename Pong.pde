@@ -9,6 +9,8 @@ int scoreRight = 0;
 int roundScoreLeft = 0;
 int roundScoreRight = 0;
 
+int menuTimer = 60;
+
 int roundTimerSeccond = 10;
 
 float paddleSpeed = 5.5;
@@ -31,6 +33,7 @@ void setup() {
 }
 
 void draw() {
+  menuTimer--;
   background(0); //clear canvas
   if (gameStarted == false) {
     titleScreen();
@@ -47,9 +50,10 @@ void titleScreen() {
   text("Ultimate Pong", width/2, height/2-60);
   textSize(30);
   text("Press any button to play", width/2, height/2+60);
-  if (keyPressed == true) {
+  if (keyPressed == true && menuTimer <= 0) {
     gameStarted = true;
     resetRound();
+    menuTimer = 60;
   }
 }
 
@@ -65,10 +69,12 @@ void roundTimerDisplay() {
         roundScoreLeft++;
         roundEnded = true;
         roundCount++;
+        menuTimer = 60;
       } else {
         roundScoreRight++;
         roundEnded = true;
         roundCount++;
+        menuTimer = 60;
       }
     }
   } else {
@@ -87,13 +93,14 @@ void midScreen() {
     text("Player 1 wins", width/2, height/2);
     textSize(40);
     text("Press any button for menu", width/2, height/2+60);
-    if (keyPressed == true) {
+    if (keyPressed == true && menuTimer <= 0) {
       resetRound();
       gameStarted = false;
       gameEnd = false;
       roundScoreLeft = 0;
       roundScoreRight = 0;
       roundCount = 0;
+      menuTimer = 60;
     }
   } else {
     if (roundScoreRight >= 2)
@@ -102,13 +109,14 @@ void midScreen() {
       text("Player 2 wins", width/2, height/2);
       textSize(40);
       text("Press any button for menu", width/2, height/2+60);
-      if (keyPressed == true) {
+      if (keyPressed == true && menuTimer <= 0) {
         resetRound();
         gameStarted = false;
         gameEnd = false;
         roundScoreLeft = 0;
         roundScoreRight = 0;
         roundCount = 0;
+        menuTimer = 60;
       }
     }
   }
@@ -119,7 +127,7 @@ void midScreen() {
     text("Player 1 wins round " + roundCount, width/2, height/2);
     textSize(40);
     text("Press any button for next round", width/2, height/2+60);
-    if (keyPressed == true) {
+    if (keyPressed == true && menuTimer <= 0) {
       resetRound();
     }
   } else {
@@ -128,8 +136,9 @@ void midScreen() {
       text("Player 2 wins round " + roundCount, width/2, height/2);
       textSize(40);
       text("Press any button for menu", width/2, height/2+60);
-      if (keyPressed == true) {
+      if (keyPressed == true && menuTimer <= 0) {
         resetRound();
+        
       }
     }
   }
@@ -150,7 +159,6 @@ void gameScreen() {
 
   ball.display(); // Draw the ball to the window
   ball.move(); //calculate a new location for the ball
-  ball.display(); // Draw the ball on the window
 
   paddleLeft.move();
   paddleLeft.display();

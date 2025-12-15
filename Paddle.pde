@@ -23,7 +23,8 @@ class Paddle {
 
   void display() {
     fill(c);
-    rect(location.x-w/2, location.y-h/2, w, h);
+    noStroke();
+    rect(location.x-w/2, location.y-h/2, w, h, 10);
   }
 
   //helper functions
