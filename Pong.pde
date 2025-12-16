@@ -2,7 +2,10 @@ import processing.sound.*;
 
 //Sounds
 ArrayList<SoundFile> trackList;
+ArrayList<SoundFile> soundList;
 int trackListCounter = 0;
+boolean loopMusic = true;
+
 
 //Objects
 Ball ball; // Define the ball as a global object
@@ -30,7 +33,7 @@ boolean gameEnd = false;
 void setup() {
   size(800, 600, P2D);
   frameRate(60);
-  
+
   loadSoundsFiles();
 
   ball = new Ball(width/2, height/2, 50); //create a new ball to the center of the window
@@ -39,6 +42,8 @@ void setup() {
 
   paddleLeft = new Paddle(50, height/2, 30, 200);
   paddleRight = new Paddle(width-50, height/2, 30, 200);
+
+  trackList.get(0).play();
 }
 
 void draw() {
@@ -188,10 +193,12 @@ void gameScreen() {
 
   if (ball.bottom() > height) {
     ball.speed.y = -ball.speed.y;
+    playSoundEffects(1);
   }
 
   if (ball.top() < 0) {
     ball.speed.y = -ball.speed.y;
+    playSoundEffects(1);
   }
 
   if (paddleLeft.bottom() > height) {
@@ -216,11 +223,13 @@ void gameScreen() {
   // bounce the ball to other direction
 
   if ( ball.left() < paddleLeft.right() && ball.location.y > paddleLeft.top() && ball.location.y < paddleLeft.bottom()) {
+    playSoundEffects(0);
     ball.speed.x = -ball.speed.x;
     ball.speed.y = map(ball.location.y - paddleLeft.location.y, -paddleLeft.h/2, paddleLeft.h/2, -10, 10);
   }
 
   if ( ball.right() > paddleRight.left() && ball.location.y > paddleRight.top() && ball.location.y < paddleRight.bottom()) {
+    playSoundEffects(0);
     ball.speed.x = -ball.speed.x;
     ball.speed.y = map(ball.location.y - paddleRight.location.y, -paddleRight.h/2, paddleRight.h/2, -10, 10);
   }
@@ -232,22 +241,27 @@ void gameScreen() {
 }
 
 void playTracks() {
-  if(!trackList.get(trackListCounter).isPlaying()) {
-    trackList.get(trackListCounter).play();
-  } else {
-    trackListCounter++;
+  if (!trackList.get(0).isPlaying() && loopMusic == true) {
+    trackList.get(1).play();
+    //trackList.get(1).loop();
+    loopMusic = false;
+  }
+}
+
+void playSoundEffects(int soundEffect) {
+  if (!soundList.get(soundEffect).isPlaying()) {
+    soundList.get(soundEffect).play();
   }
 }
 
 void loadSoundsFiles() {
   trackList = new ArrayList<SoundFile>();
+  trackList.add(new SoundFile(this, "Music/buildUp.wav"));
+  trackList.add(new SoundFile(this, "Music/Loop.wav"));
 
-  // Load sound files and add them to the list
-  trackList.add(new SoundFile(this, "Music/Loop1.wav"));
-  trackList.add(new SoundFile(this, "Music/Loop2.wav"));
-  trackList.add(new SoundFile(this, "Music/Loop3.wav"));
-  trackList.add(new SoundFile(this, "Music/Loop4.wav"));
-  trackList.add(new SoundFile(this, "Music/Loop5.wav"));
+  soundList = new ArrayList<SoundFile>();
+  soundList.add(new SoundFile(this, "Sound/HitBall.wav"));
+  soundList.add(new SoundFile(this, "Sound/HitWall.wav"));
 }
 
 
