@@ -3,7 +3,9 @@ import processing.sound.*;
 //Sounds
 ArrayList<SoundFile> trackList;
 ArrayList<SoundFile> soundList;
+ArrayList<SoundFile> effectLayers;
 int trackListCounter = 0;
+float audioCounter;
 boolean loopMusic = true;
 
 
@@ -11,6 +13,8 @@ boolean loopMusic = true;
 Ball ball; // Define the ball as a global object
 Paddle paddleLeft;
 Paddle paddleRight;
+
+AreaEffects effects;
 
 int scoreLeft = 0;
 int scoreRight = 0;
@@ -23,6 +27,8 @@ int menuTimer = 60;
 int roundTimerSeccond = 10;
 
 float paddleSpeed = 5.5;
+int paddleInputLeft = 0;
+int paddleInputRight = 0;
 int roundTimer = 0;
 int roundCount = 0;
 
@@ -43,10 +49,21 @@ void setup() {
   paddleLeft = new Paddle(50, height/2, 30, 200);
   paddleRight = new Paddle(width-50, height/2, 30, 200);
 
+  effects = new AreaEffects();
+
   trackList.get(0).play();
 }
 
 void draw() {
+  audioCounter = audioCounter + 0.017;
+  if (audioCounter >= 31.475) {
+    audioCounter = 0;
+  }
+  //println(audioCounter);
+  
+  println("Frames= " + file.frames() + " frames");
+
+
   menuTimer--;
   playTracks();
   background(0); //clear canvas
@@ -102,6 +119,7 @@ void roundTimerDisplay() {
 
 void midScreen() {
   textAlign(CENTER);
+  effects.ice = true;
   if (roundScoreLeft >= 2)
   {
     gameEnd = true;
@@ -174,6 +192,7 @@ void gameScreen() {
   ball.display(); // Draw the ball to the window
   ball.move(); //calculate a new location for the ball
 
+  movePaddles();
   paddleLeft.move();
   paddleLeft.display();
   paddleRight.move();
@@ -243,9 +262,23 @@ void gameScreen() {
 void playTracks() {
   if (!trackList.get(0).isPlaying() && loopMusic == true) {
     trackList.get(1).play();
-    //trackList.get(1).loop();
+    trackList.get(1).loop();
     loopMusic = false;
   }
+
+  if (effects.ice == true) {
+    if (!effectLayers.get(0).isPlaying()) {
+      effectLayers.get(0).cue(audioCounter);
+      effectLayers.get(0).play();
+      effectLayers.get(0).loop();
+    }
+  }
+}
+
+void rotation() {
+  pushMatrix();
+  translate(width/2, height/2);
+  rotate(frameCount/90.0);
 }
 
 void playSoundEffects(int soundEffect) {
@@ -262,35 +295,129 @@ void loadSoundsFiles() {
   soundList = new ArrayList<SoundFile>();
   soundList.add(new SoundFile(this, "Sound/HitBall.wav"));
   soundList.add(new SoundFile(this, "Sound/HitWall.wav"));
+
+  effectLayers = new ArrayList<SoundFile>();
+  effectLayers.add(new SoundFile(this, "Layers/ice.wav"));
 }
 
 
 void keyPressed() {
   if (keyCode == UP) {
-    paddleRight.speed.y=(paddleSpeed*-1);
+    paddleInputRight = 1;
   }
   if (keyCode == DOWN) {
-    paddleRight.speed.y=paddleSpeed;
+    paddleInputRight = -1;
   }
   if (key == 'w') {
-    paddleLeft.speed.y=(paddleSpeed*-1);
+    paddleInputLeft = 1;
   }
   if (key == 's') {
-    paddleLeft.speed.y=paddleSpeed;
+    paddleInputLeft = -1;
   }
 }
 
 void keyReleased() {
   if (keyCode == UP) {
-    paddleRight.speed.y=0;
+    paddleInputRight = 0;
   }
   if (keyCode == DOWN) {
-    paddleRight.speed.y=0;
+    paddleInputRight = 0;
   }
   if (key == 'w') {
-    paddleLeft.speed.y=0;
+    paddleInputLeft = 0;
   }
   if (key == 's') {
-    paddleLeft.speed.y=0;
+    paddleInputLeft = 0;
+  }
+}
+
+
+void movePaddles() {
+  if (paddleInputRight == 1) {
+    if (effects.ice == true) {
+      paddleRight.speed.y = paddleRight.speed.y - 0.1;
+      if (paddleRight.speed.y <= (paddleSpeed*-1))
+      {
+        paddleRight.speed.y= (paddleSpeed*-1);
+      }
+    } else {
+      paddleRight.speed.y=(paddleSpeed*-1);
+    }
+  } else if (paddleInputRight == -1) {
+    if (effects.ice == true) {
+      paddleRight.speed.y = paddleRight.speed.y + 0.1;
+      if (paddleRight.speed.y >= paddleSpeed)
+      {
+        paddleRight.speed.y=paddleSpeed;
+      }
+    } else {
+      paddleRight.speed.y=paddleSpeed;
+    }
+  } else if (paddleInputRight == 0) {
+    if (effects.ice == true) {
+      if (paddleRight.speed.y <= 0) {
+        if (paddleRight.speed.y >= -0.1) {
+          println("Started 1");
+          paddleRight.speed.y = 0;
+        } else {
+          println("Started 2");
+          paddleRight.speed.y = paddleRight.speed.y + 0.1;
+        }
+      } else if (paddleRight.speed.y >= 0) {
+        if (paddleRight.speed.y <= 0.1) {
+          println("Started 1");
+          paddleRight.speed.y = 0;
+        } else {
+          println("Started 2");
+          paddleRight.speed.y = paddleRight.speed.y - 0.1;
+        }
+      }
+    } else {
+      paddleRight.speed.y=0;
+    }
+  }
+
+  if (paddleInputLeft == 1) {
+    if (effects.ice == true) {
+      paddleLeft.speed.y = paddleLeft.speed.y - 0.1;
+      if (paddleLeft.speed.y <= (paddleSpeed*-1))
+      {
+        paddleLeft.speed.y= (paddleSpeed*-1);
+      }
+    } else {
+      paddleLeft.speed.y=(paddleSpeed*-1);
+    }
+  } else if (paddleInputLeft == -1) {
+    if (effects.ice == true) {
+      paddleLeft.speed.y = paddleLeft.speed.y + 0.1;
+      if (paddleLeft.speed.y >= paddleSpeed)
+      {
+        paddleLeft.speed.y=paddleSpeed;
+      }
+    } else {
+      paddleLeft.speed.y=paddleSpeed;
+    }
+  } else if (paddleInputLeft == 0) {
+    if (effects.ice == true) {
+      if (paddleLeft.speed.y <= 0) {
+        if (paddleLeft.speed.y >= -0.1) {
+          println("Started 1");
+          paddleLeft.speed.y = 0;
+        } else {
+          println("Started 2");
+          paddleLeft.speed.y = paddleLeft.speed.y + 0.1;
+        }
+      } else if (paddleLeft.speed.y >= 0) {
+        if (paddleLeft.speed.y <= 0.1) {
+          println("Started 1");
+          paddleLeft.speed.y = 0;
+        } else {
+          println("Started 2");
+          paddleLeft.speed.y = paddleLeft.speed.y - 0.1;
+        }
+      }
+    } else {
+      paddleLeft.speed.y=0;
+    }
   }
 }
